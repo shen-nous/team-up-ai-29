@@ -4,7 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { Loader2, Sparkles } from "lucide-react";
 
-import { PageShell } from "@/components/AppNav";
+import { LoadingDots, PageShell } from "@/components/AppNav";
 import { MetaField, TagList } from "@/components/TagList";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -81,10 +81,7 @@ function PostProjectPage() {
       </form>
 
       {mutation.isPending && (
-        <div className="surface-card mt-6 flex items-center gap-3 p-6 text-sm text-muted-foreground">
-          <Loader2 className="h-4 w-4 animate-spin text-primary" />
-          Extracting needed skills, domains and team size…
-        </div>
+        <LoadingDots message="Extracting needed skills, domains and team size…" />
       )}
 
       {mutation.isError && (
@@ -94,10 +91,10 @@ function PostProjectPage() {
       )}
 
       {project && !mutation.isPending && (
-        <div className="surface-card mt-6 p-6">
+        <div className="surface-card animate-fade-up mt-6 p-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold">{project.title ?? "Untitled project"}</h2>
-            <span className="rounded-full bg-primary/15 px-3 py-1 text-xs font-medium text-primary">Saved</span>
+            <h2 className="text-xl font-bold">{project.title ?? "Untitled project"}</h2>
+            <span className="pill-tag px-3 py-1 text-xs font-semibold">Saved</span>
           </div>
           <div className="mt-5 grid gap-5">
             <TagList label="Needed skills" items={project.needed_skills ?? []} />

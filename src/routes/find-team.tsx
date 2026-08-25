@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Loader2, Users } from "lucide-react";
 
 import { PageShell } from "@/components/AppNav";
@@ -56,7 +56,7 @@ function FindTeamPage() {
           id="project-select"
           value={projectId}
           onChange={(e) => setProjectId(e.target.value)}
-          className="mt-3 w-full rounded-lg border border-input bg-background/60 px-3 py-2 text-sm text-foreground outline-none focus:border-ring"
+          className="mt-3 w-full rounded-xl border border-input bg-background/60 px-3 py-2 text-sm text-foreground outline-none focus:border-ring"
         >
           <option value="">
             {projectsQuery.isLoading ? "Loading projects…" : "Select a saved project"}
@@ -92,7 +92,7 @@ function FindTeamPage() {
       {mutation.isPending && (
         <div className="mt-6 grid gap-3">
           {[0, 1, 2].map((i) => (
-            <div key={i} className="surface-card animate-pulse p-6">
+            <div key={i} className="surface-card shimmer p-6">
               <div className="h-4 w-32 rounded bg-muted" />
               <div className="mt-3 h-3 w-full rounded bg-muted" />
               <div className="mt-2 h-3 w-2/3 rounded bg-muted" />
@@ -122,25 +122,32 @@ function FindTeamPage() {
             Ranked candidates ({matches.length})
           </h2>
           {matches.map((match, index) => (
-            <article key={match.profile_id} className="surface-card p-6">
+            <article
+              key={match.profile_id}
+              className="surface-card animate-fade-up p-6"
+              style={{ animationDelay: `${index * 90}ms` }}
+            >
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <p className="text-xs text-muted-foreground">#{index + 1}</p>
-                  <h3 className="text-base font-semibold">{match.name}</h3>
+                  <h3 className="text-lg font-bold">{match.name}</h3>
                   <p className="mt-1 font-mono text-[11px] text-muted-foreground">{match.profile_id.slice(0, 8)}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-2xl font-semibold text-primary">{match.score}</p>
+                  <p className="gradient-text text-3xl font-bold">
+                    <CountUp value={match.score} />
+                  </p>
                   <p className="text-[11px] uppercase tracking-widest text-muted-foreground">score</p>
                 </div>
               </div>
               <p className="mt-4 text-sm leading-relaxed text-foreground/90">{match.reasoning}</p>
               {match.skills.length > 0 && (
                 <div className="mt-4 flex flex-wrap gap-2">
-                  {match.skills.slice(0, 8).map((skill) => (
+                  {match.skills.slice(0, 8).map((skill, si) => (
                     <span
                       key={skill}
-                      className="rounded-full border border-border bg-secondary px-2.5 py-1 text-[11px] text-secondary-foreground"
+                      className="pill-tag animate-chip-in px-2.5 py-1 text-[11px] font-medium"
+                      style={{ animationDelay: `${index * 90 + 200 + si * 50}ms` }}
                     >
                       {skill}
                     </span>
@@ -153,4 +160,22 @@ function FindTeamPage() {
       )}
     </PageShell>
   );
+}
+
+function CountUp({ value }: { value: number }) {
+  const [display, setDisplay] = useState(0);
+
+  useEffect(() => {
+    let frame = 0;
+    const total = 32;
+    const id = window.setInterval(() => {
+      frame += 1;
+      const eased = 1 - Math.pow(1 - frame / total, 3);
+      setDisplay(Math.round(value * eased));
+      if (frame >= total) window.clearInterval(id);
+    }, 20);
+    return () => window.clearInterval(id);
+  }, [value]);
+
+  return <>{display}</>;
 }
