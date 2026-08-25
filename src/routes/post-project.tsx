@@ -8,43 +8,43 @@ import { PageShell } from "@/components/AppNav";
 import { MetaField, TagList } from "@/components/TagList";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { extractProfile } from "@/lib/match.functions";
+import { extractProject } from "@/lib/match.functions";
 
-export const Route = createFileRoute("/")({
+export const Route = createFileRoute("/post-project")({
   head: () => ({
     meta: [
-      { title: "Add Your Profile — Project Match" },
+      { title: "Post a Project — Project Match" },
       {
         name: "description",
         content:
-          "Describe yourself in plain English and Project Match turns it into a structured teammate profile for hackathons and side projects.",
+          "Describe your hackathon project and the teammates you need. Project Match extracts the needed skills, domains and team size.",
       },
-      { property: "og:title", content: "Add Your Profile — Project Match" },
+      { property: "og:title", content: "Post a Project — Project Match" },
       {
         property: "og:description",
-        content: "Turn a free-text intro into a structured teammate profile for hackathon team formation.",
+        content: "Describe your project in free text and get a structured brief of the teammates you need.",
       },
     ],
   }),
-  component: AddProfilePage,
+  component: PostProjectPage,
 });
 
 const PLACEHOLDER =
-  "I'm Maya, a frontend dev comfortable with React, TypeScript and Tailwind. I've shipped two ML side projects and I'm into climate tech and developer tools. I can do about 15 hours a week, mostly evenings. Been coding professionally for 3 years.";
+  "We're building an app that turns utility bills into a household carbon dashboard. I handle backend and data pipelines. We need someone strong on mobile UI plus anyone who has worked with OCR or document parsing. Aiming for a team of four for a 48-hour hackathon.";
 
-function AddProfilePage() {
+function PostProjectPage() {
   const [text, setText] = useState("");
-  const run = useServerFn(extractProfile);
+  const run = useServerFn(extractProject);
   const mutation = useMutation({
     mutationFn: (value: string) => run({ data: { text: value } }),
   });
 
-  const profile = mutation.data;
+  const project = mutation.data;
 
   return (
     <PageShell
-      title="Add your profile"
-      subtitle="Write about yourself the way you'd tell a friend — skills, interests, availability, experience. AI pulls out the structure."
+      title="Post a project"
+      subtitle="Describe what you're building and the kind of teammates you're missing. AI turns it into a structured brief."
     >
       <form
         className="surface-card p-6"
@@ -53,11 +53,11 @@ function AddProfilePage() {
           if (text.trim().length >= 10) mutation.mutate(text.trim());
         }}
       >
-        <label htmlFor="profile-text" className="text-sm font-medium">
-          Tell us about yourself
+        <label htmlFor="project-text" className="text-sm font-medium">
+          Describe your project and who you need
         </label>
         <Textarea
-          id="profile-text"
+          id="project-text"
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder={PLACEHOLDER}
@@ -69,18 +69,23 @@ function AddProfilePage() {
           <Button type="submit" disabled={mutation.isPending || text.trim().length < 10}>
             {mutation.isPending ? (
               <>
-                <Loader2 className="h-4 w-4 animate-spin" /> Parsing profile…
+                <Loader2 className="h-4 w-4 animate-spin" /> Parsing project…
               </>
             ) : (
               <>
-                <Sparkles className="h-4 w-4" /> Parse & save profile
+                <Sparkles className="h-4 w-4" /> Parse & save project
               </>
             )}
           </Button>
         </div>
       </form>
 
-      {mutation.isPending && <PendingCard message="Reading your intro and extracting skills, domains and availability…" />}
+      {mutation.isPending && (
+        <div className="surface-card mt-6 flex items-center gap-3 p-6 text-sm text-muted-foreground">
+          <Loader2 className="h-4 w-4 animate-spin text-primary" />
+          Extracting needed skills, domains and team size…
+        </div>
+      )}
 
       {mutation.isError && (
         <p className="mt-6 rounded-xl border border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive-foreground">
@@ -88,31 +93,19 @@ function AddProfilePage() {
         </p>
       )}
 
-      {profile && !mutation.isPending && (
+      {project && !mutation.isPending && (
         <div className="surface-card mt-6 p-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold">{profile.name ?? "Anonymous"}</h2>
+            <h2 className="text-lg font-semibold">{project.title ?? "Untitled project"}</h2>
             <span className="rounded-full bg-primary/15 px-3 py-1 text-xs font-medium text-primary">Saved</span>
           </div>
           <div className="mt-5 grid gap-5">
-            <TagList label="Skills" items={profile.skills ?? []} />
-            <TagList label="Domains" items={profile.domains ?? []} />
-            <div className="grid grid-cols-2 gap-4">
-              <MetaField label="Availability" value={profile.availability} />
-              <MetaField label="Experience" value={profile.experience_level} />
-            </div>
+            <TagList label="Needed skills" items={project.needed_skills ?? []} />
+            <TagList label="Domains" items={project.domains ?? []} />
+            <MetaField label="Team size" value={project.team_size} />
           </div>
         </div>
       )}
     </PageShell>
-  );
-}
-
-export function PendingCard({ message }: { message: string }) {
-  return (
-    <div className="surface-card mt-6 flex items-center gap-3 p-6 text-sm text-muted-foreground">
-      <Loader2 className="h-4 w-4 animate-spin text-primary" />
-      {message}
-    </div>
   );
 }
