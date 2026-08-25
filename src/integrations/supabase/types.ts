@@ -14,7 +14,111 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      matches: {
+        Row: {
+          created_at: string
+          id: string
+          profile_id: string
+          project_id: string
+          reasoning: string | null
+          score: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          profile_id: string
+          project_id: string
+          reasoning?: string | null
+          score: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          profile_id?: string
+          project_id?: string
+          reasoning?: string | null
+          score?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "matches_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matches_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          availability: string | null
+          created_at: string
+          domains: string[]
+          experience_level: string | null
+          id: string
+          name: string | null
+          raw_text: string
+          skills: string[]
+        }
+        Insert: {
+          availability?: string | null
+          created_at?: string
+          domains?: string[]
+          experience_level?: string | null
+          id?: string
+          name?: string | null
+          raw_text: string
+          skills?: string[]
+        }
+        Update: {
+          availability?: string | null
+          created_at?: string
+          domains?: string[]
+          experience_level?: string | null
+          id?: string
+          name?: string | null
+          raw_text?: string
+          skills?: string[]
+        }
+        Relationships: []
+      }
+      projects: {
+        Row: {
+          created_at: string
+          domains: string[]
+          id: string
+          needed_skills: string[]
+          raw_text: string
+          team_size: number | null
+          title: string | null
+        }
+        Insert: {
+          created_at?: string
+          domains?: string[]
+          id?: string
+          needed_skills?: string[]
+          raw_text: string
+          team_size?: number | null
+          title?: string | null
+        }
+        Update: {
+          created_at?: string
+          domains?: string[]
+          id?: string
+          needed_skills?: string[]
+          raw_text?: string
+          team_size?: number | null
+          title?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
