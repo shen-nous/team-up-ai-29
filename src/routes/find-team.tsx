@@ -143,11 +143,11 @@ function FindTeamPage() {
               <p className="mt-4 text-sm leading-relaxed text-foreground/90">{match.reasoning}</p>
               {match.skills.length > 0 && (
                 <div className="mt-4 flex flex-wrap gap-2">
-                  {match.skills.slice(0, 8).map((skill) => (
+                  {match.skills.slice(0, 8).map((skill, si) => (
                     <span
                       key={skill}
                       className="pill-tag animate-chip-in px-2.5 py-1 text-[11px] font-medium"
-                      style={{ animationDelay: `${index * 90 + 200}ms` }}
+                      style={{ animationDelay: `${index * 90 + 200 + si * 50}ms` }}
                     >
                       {skill}
                     </span>
