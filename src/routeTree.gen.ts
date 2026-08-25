@@ -10,11 +10,17 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as FindTeamRouteImport } from './routes/find-team'
 import { Route as PostProjectRouteImport } from './routes/post-project'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FindTeamRoute = FindTeamRouteImport.update({
+  id: '/find-team',
+  path: '/find-team',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PostProjectRoute = PostProjectRouteImport.update({
@@ -25,27 +31,31 @@ const PostProjectRoute = PostProjectRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/find-team': typeof FindTeamRoute
   '/post-project': typeof PostProjectRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/find-team': typeof FindTeamRoute
   '/post-project': typeof PostProjectRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/find-team': typeof FindTeamRoute
   '/post-project': typeof PostProjectRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/post-project'
+  fullPaths: '/' | '/find-team' | '/post-project'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/post-project'
-  id: '__root__' | '/' | '/post-project'
+  to: '/' | '/find-team' | '/post-project'
+  id: '__root__' | '/' | '/find-team' | '/post-project'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  FindTeamRoute: typeof FindTeamRoute
   PostProjectRoute: typeof PostProjectRoute
 }
 
@@ -56,6 +66,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/find-team': {
+      id: '/find-team'
+      path: '/find-team'
+      fullPath: '/find-team'
+      preLoaderRoute: typeof FindTeamRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/post-project': {
@@ -70,6 +87,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  FindTeamRoute: FindTeamRoute,
   PostProjectRoute: PostProjectRoute,
 }
 export const routeTree = rootRouteImport
