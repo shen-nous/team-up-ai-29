@@ -135,7 +135,15 @@ export const matchTeam = createServerFn({ method: "POST" })
       .limit(100);
     if (profilesError) throw new Error(profilesError.message);
     if (!profiles || profiles.length === 0) {
-      return { matches: [] as Array<{ profile_id: string; name: string; score: number; reasoning: string }> };
+      return {
+        matches: [] as Array<{
+          profile_id: string;
+          name: string;
+          skills: string[];
+          score: number;
+          reasoning: string;
+        }>,
+      };
     }
 
     const result = await callGatewayJson<{
